@@ -1,0 +1,2 @@
+class MonthlyConsumptionsController < ApplicationController
+end
