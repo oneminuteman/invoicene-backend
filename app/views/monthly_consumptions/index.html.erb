@@ -1,0 +1,22 @@
+<h1>Monthly Consumptions for <%= @customer.name %></h1>
+<table>
+  <thead>
+    <tr>
+      <th>Month</th>
+      <th>Year</th>
+      <th>Consumption</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @monthly_consumptions.each do |consumption| %>
+      <tr>
+        <td><%= consumption.month %></td>
+        <td><%= consumption.year %></td>
+        <td><%= consumption.consumption %></td>
+        <td><%= link_to 'Edit', edit_monthly_consumption_path(consumption) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link_to 'Add Consumption', new_customer_monthly_consumption_path(@customer) %>

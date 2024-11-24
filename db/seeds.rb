@@ -7,3 +7,7 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+%w[Location1 Location2 Location3 Location4 Location5].each do |location_name|
+    Location.find_or_create_by(name: location_name)
+  end
+  
