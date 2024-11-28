@@ -1,2 +1,4 @@
-class ApplicationController < ActionController::API
-end
+class ApplicationController < ActionController::Base
+    include ActionController::MimeResponds
+  end
+  

@@ -6,7 +6,8 @@ Rails.application.routes.draw do
     end
   end
 
-  # You can define a root path or additional custom routes if needed
+  # Root path points to the index action of LocationsController
   root "locations#index"
 end
+
 

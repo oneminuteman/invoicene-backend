@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_18_115444) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_25_100117) do
   create_table "customers", force: :cascade do |t|
     t.string "name"
     t.integer "location_id", null: false
@@ -27,20 +27,12 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_18_115444) do
 
   create_table "monthly_consumptions", force: :cascade do |t|
     t.integer "year"
-    t.decimal "jan"
-    t.decimal "feb"
-    t.decimal "mar"
-    t.decimal "apr"
-    t.decimal "may"
-    t.decimal "jun"
-    t.decimal "jul"
-    t.decimal "aug"
-    t.decimal "sep"
-    t.decimal "oct"
-    t.decimal "nov"
-    t.decimal "dec"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "month"
+    t.integer "consumption"
+    t.integer "customer_id"
+    t.index ["customer_id"], name: "index_monthly_consumptions_on_customer_id"
   end
 
   add_foreign_key "customers", "locations"
