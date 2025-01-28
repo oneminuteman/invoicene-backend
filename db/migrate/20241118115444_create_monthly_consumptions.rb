@@ -1,21 +1,23 @@
-class CreateMonthlyConsumptions < ActiveRecord::Migration[8.0]
+class CreateMonthlyConsumptions < ActiveRecord::Migration[6.1]
   def change
     create_table :monthly_consumptions do |t|
-      t.integer :year
-      t.decimal :jan
-      t.decimal :feb
-      t.decimal :mar
-      t.decimal :apr
-      t.decimal :may
-      t.decimal :jun
-      t.decimal :jul
-      t.decimal :aug
-      t.decimal :sep
-      t.decimal :oct
-      t.decimal :nov
-      t.decimal :dec
+      t.references :customer, null: false, foreign_key: true
+      t.integer :year, null: false
+      t.decimal :jan, precision: 10, scale: 2, default: 0.0
+      t.decimal :feb, precision: 10, scale: 2, default: 0.0
+      t.decimal :mar, precision: 10, scale: 2, default: 0.0
+      t.decimal :apr, precision: 10, scale: 2, default: 0.0
+      t.decimal :may, precision: 10, scale: 2, default: 0.0
+      t.decimal :jun, precision: 10, scale: 2, default: 0.0
+      t.decimal :jul, precision: 10, scale: 2, default: 0.0
+      t.decimal :aug, precision: 10, scale: 2, default: 0.0
+      t.decimal :sep, precision: 10, scale: 2, default: 0.0
+      t.decimal :oct, precision: 10, scale: 2, default: 0.0
+      t.decimal :nov, precision: 10, scale: 2, default: 0.0
+      t.decimal :dec, precision: 10, scale: 2, default: 0.0
 
       t.timestamps
     end
   end
 end
+

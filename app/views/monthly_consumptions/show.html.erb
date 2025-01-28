@@ -1,0 +1,10 @@
+<h1>Monthly Consumption</h1>
+
+<p>
+  <strong>Customer:</strong> <%= @monthly_consumption.customer.name %><br>
+  <strong>Month:</strong> <%= @monthly_consumption.month %><br>
+  <strong>Year:</strong> <%= @monthly_consumption.year %><br>
+  <strong>Consumption:</strong> <%= @monthly_consumption.consumption %> kWh<br>
+</p>
+
+<%= link_to "Back to Customer", customer_monthly_consumptions_path(@monthly_consumption.customer) %>

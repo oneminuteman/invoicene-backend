@@ -1,0 +1,7 @@
+<h1>Customers in <%= @location.name %></h1>
+<ul>
+  <% @customers.each do |customer| %>
+    <li><%= link_to customer.name, customer_monthly_consumptions_path(customer) %></li>
+  <% end %>
+</ul>
+<%= link_to 'Add Customer', new_location_customer_path(@location) %>

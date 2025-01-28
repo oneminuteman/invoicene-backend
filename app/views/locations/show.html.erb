@@ -1,0 +1,24 @@
+<h1>Location: <%= @location.name %></h1>
+
+<p>
+  <strong>ID:</strong> <%= @location.id %><br>
+  <strong>Created At:</strong> <%= @location.created_at.strftime("%d-%m-%Y %H:%M:%S") %>
+</p>
+
+<h2>Customers</h2>
+<% if @location.customers.any? %>
+  <ul>
+    <% @location.customers.each do |customer| %>
+      <li>
+        <%= link_to customer.name, location_customer_path(@location, customer) %>
+        (<%= link_to "Edit", edit_customer_path(customer) %> |
+         <%= link_to "Delete", customer, method: :delete, data: { confirm: "Are you sure?" } %>)
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No customers found for this location.</p>
+<% end %>
+
+<%= link_to "Add New Customer", new_location_customer_path(@location), class: "button" %><br>
+<%= link_to "Back to Locations", locations_path %>

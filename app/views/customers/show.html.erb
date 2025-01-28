@@ -1,0 +1,25 @@
+<h1>Customer: <%= @customer.name %></h1>
+
+<p>
+  <strong>ID:</strong> <%= @customer.id %><br>
+  <strong>Location:</strong> <%= @customer.location.name %><br>
+  <strong>Created At:</strong> <%= @customer.created_at.strftime("%d-%m-%Y %H:%M:%S") %>
+</p>
+
+<h2>Monthly Consumptions</h2>
+<% if @customer.monthly_consumptions.any? %>
+  <ul>
+    <% @customer.monthly_consumptions.each do |consumption| %>
+      <li>
+        <strong><%= consumption.month %> <%= consumption.year %>:</strong> <%= consumption.consumption %> kWh
+        (<%= link_to "Edit", edit_monthly_consumption_path(consumption) %> |
+         <%= link_to "Delete", consumption, method: :delete, data: { confirm: "Are you sure?" } %>)
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No monthly consumption records available for this customer.</p>
+<% end %>
+
+<%= link_to "Add New Monthly Consumption", new_customer_monthly_consumption_path(@customer), class: "button" %><br>
+<%= link_to "Back to Customers", location_customers_path(@customer.location) %>
