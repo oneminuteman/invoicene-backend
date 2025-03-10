@@ -1,70 +1,68 @@
 class CustomersController < ApplicationController
   before_action :set_customer, only: %i[show edit update destroy]
-  before_action :set_location, only: %i[create]
+  before_action :set_location, only: %i[index create]
 
-  # GET /customers
-  # GET /customers.json
+  # GET /locations/:location_id/customers
   def index
-    @customers = Customer.all
-    respond_to do |format|
-      format.html # Renders default HTML view
-      format.json { render json: @customers }
+    if @location
+      @customers = @location.customers.includes(:monthly_consumptions)
+      render json: @customers.as_json(include: :monthly_consumptions), status: :ok
+    else
+      render json: { error: 'Location not found' }, status: :not_found
     end
   end
 
   # GET /customers/:id
-  # GET /customers/:id.json
   def show
-    respond_to do |format|
-      format.html # Renders default HTML view
-      format.json { render json: @customer }
+    if @customer
+      render json: @customer, status: :ok
+    else
+      render json: { error: 'Customer not found' }, status: :not_found
     end
   end
 
   # POST /locations/:location_id/customers
   def create
-    if @location
-      @customer = @location.customers.build(customer_params)
-    else
-      @customer = Customer.new(customer_params)
-    end
+    @customer = @location.customers.build(customer_params) if @location
 
-    if @customer.save
-      respond_to do |format|
-        format.html { redirect_to @customer, notice: 'Customer was successfully created.' }
-        format.json { render json: { message: 'Customer created successfully!', data: @customer }, status: :created }
-      end
+    if @customer&.save
+      render json: { message: 'Customer created successfully!', data: @customer }, status: :created
     else
-      respond_to do |format|
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: { errors: @customer.errors.full_messages }, status: :unprocessable_entity }
-      end
+      render json: { errors: @customer.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
   # PUT/PATCH /customers/:id
-  # PUT/PATCH /customers/:id.json
-  def update
-    if @customer.update(customer_params)
-      respond_to do |format|
-        format.html { redirect_to @customer, notice: 'Customer was successfully updated.' }
-        format.json { render json: { message: 'Customer updated successfully!', data: @customer }, status: :ok }
+  # PUT/PATCH /customers/:id
+def update
+  if @customer.update(customer_params)
+    @customer.monthly_consumptions.each do |mc|
+      # Ensure balance and overhead rules
+      mc.balance = mc.balance.to_f
+      mc.overhead = mc.overhead.to_f
+
+      if mc.balance > 0
+        mc.overhead = 0
+      elsif mc.overhead > 0
+        mc.balance = 0
       end
-    else
-      respond_to do |format|
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: { errors: @customer.errors.full_messages }, status: :unprocessable_entity }
-      end
+
+      mc.save!  # Save the updates
     end
+
+    render json: { message: "Customer and monthly consumptions updated!", data: @customer.monthly_consumptions }, status: :ok
+  else
+    render json: { errors: @customer.errors.full_messages }, status: :unprocessable_entity
   end
+end
+
 
   # DELETE /customers/:id
-  # DELETE /customers/:id.json
   def destroy
-    @customer.destroy
-    respond_to do |format|
-      format.html { redirect_to customers_url, notice: 'Customer was successfully deleted.' }
-      format.json { render json: { message: 'Customer deleted successfully.' }, status: :ok }
+    if @customer.destroy
+      render json: { message: 'Customer deleted successfully.' }, status: :ok
+    else
+      render json: { error: 'Failed to delete customer.' }, status: :unprocessable_entity
     end
   end
 
@@ -73,27 +71,21 @@ class CustomersController < ApplicationController
   # Find the customer by ID
   def set_customer
     @customer = Customer.find_by(id: params[:id])
-    unless @customer
-      render json: { error: 'Customer not found' }, status: :not_found
-    end
+    render json: { error: 'Customer not found' }, status: :not_found unless @customer
   end
 
   # Find the location by ID for nested resources
   def set_location
-    if params[:location_id]
-      @location = Location.find_by(id: params[:location_id])
-      unless @location
-        render json: { error: 'Location not found' }, status: :not_found and return
-      end
-    end
+    @location = Location.find_by(id: params[:location_id]) if params[:location_id]
+    render json: { error: 'Location not found' }, status: :not_found unless @location
   end
 
   # Permit only allowed parameters
   def customer_params
     params.require(:customer).permit(
-      :name,
-      :location_id,
-      monthly_consumptions_attributes: %i[month year consumption]
+      monthly_consumptions_attributes: [:id, :month, :year, :consumption, :balance, :overhead]
     )
   end
 end
+
+
