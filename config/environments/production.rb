@@ -1,4 +1,4 @@
-require "active_support/core_ext/integer/time"
+require "active_support/core_ext/integer.time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -21,11 +21,25 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
+  # Assume all access to the app is happening through an SSL-terminating reverse proxy.
   config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
+
+  # SSL options configuration with paths to your certificate and key files
+  config.ssl_options = { 
+    key: Rails.root.join("config", "ssl", "private-key.pem"), # Replace with actual path to private key
+    cert: Rails.root.join("config", "ssl", "cert.pem"),     # Replace with actual path to certificate
+    ca: Rails.root.join("config", "ssl", "ca.pem")           # Optional, if you have a CA certificate
+  }
+
+  # Alternatively, for the original paths from your configuration:
+  # config.ssl_options = { 
+  #   key: "C:/Users/Hp/oneminuteman/projects/invoicene-backend/myinvoiceapp/config/ssl/localhost.key",
+  #   cert: "C:/Users/Hp/oneminuteman/projects/invoicene-backend/myinvoiceapp/config/ssl/localhost.crt",
+  #   ca: "C:/Users/Hp/oneminuteman/projects/invoicene-backend/myinvoiceapp/config/ssl/keystore.p12"
+  # }
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -34,7 +48,7 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
   config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
 
-  # Change to "debug" to log everything (including potentially personally-identifiable information!)
+  # Change to "debug" to log everything (including potentially personally-identifiable information!).
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Prevent health checks from clogging up the logs.
@@ -84,3 +98,4 @@ Rails.application.configure do
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end
+

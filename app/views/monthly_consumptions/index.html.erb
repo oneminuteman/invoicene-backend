@@ -1,4 +1,5 @@
 <h1>Monthly Consumptions for <%= @customer.name %></h1>
+
 <table>
   <thead>
     <tr>
@@ -14,9 +15,12 @@
         <td><%= consumption.month %></td>
         <td><%= consumption.year %></td>
         <td><%= consumption.consumption %></td>
-        <td><%= link_to 'Edit', edit_monthly_consumption_path(consumption) %></td>
+        <td>
+          <%= link_to 'Edit', edit_location_customer_monthly_consumption_path(@customer.location_id, @customer.id, consumption) %>
+        </td>
       </tr>
     <% end %>
   </tbody>
 </table>
-<%= link_to 'Add Consumption', new_customer_monthly_consumption_path(@customer) %>
+
+<%= link_to 'Add Consumption', new_location_customer_monthly_consumption_path(@customer.location_id, @customer.id) %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_25_100117) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_12_071927) do
   create_table "customers", force: :cascade do |t|
     t.string "name"
     t.integer "location_id", null: false
@@ -32,7 +32,18 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_25_100117) do
     t.string "month"
     t.integer "consumption"
     t.integer "customer_id"
+    t.decimal "balance", precision: 10, scale: 2
+    t.decimal "overhead", precision: 10, scale: 2
     t.index ["customer_id"], name: "index_monthly_consumptions_on_customer_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "customers", "locations"

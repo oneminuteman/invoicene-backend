@@ -1,73 +1,58 @@
 class MonthlyConsumptionsController < ApplicationController
   before_action :set_customer, only: %i[index new create]
   before_action :set_monthly_consumption, only: %i[show edit update destroy]
-  respond_to :html, :json
 
-  # GET /customers/:customer_id/monthly_consumptions
+  # GET /locations/:location_id/customers/:customer_id/monthly_consumptions
   def index
     @monthly_consumptions = @customer.monthly_consumptions
+
     respond_to do |format|
       format.html
-      format.json { render json: @monthly_consumptions }
+      format.json { render json: @monthly_consumptions, only: [:id, :year, :month, :consumption, :balance, :overhead, :customer_id], status: :ok }
     end
   end
 
-  # GET /monthly_consumptions/:id
+  # GET /locations/:location_id/customers/:customer_id/monthly_consumptions/:id
   def show
     respond_to do |format|
       format.html
-      format.json { render json: @monthly_consumption }
+      format.json { render json: @monthly_consumption, only: [:id, :year, :month, :consumption, :balance, :overhead, :customer_id], status: :ok }
     end
   end
 
-  # GET /customers/:customer_id/monthly_consumptions/new
+  # GET /locations/:location_id/customers/:customer_id/monthly_consumptions/new
   def new
     @monthly_consumption = @customer.monthly_consumptions.build
   end
 
-  # POST /customers/:customer_id/monthly_consumptions
+  # POST /locations/:location_id/customers/:customer_id/monthly_consumptions
   def create
     @monthly_consumption = @customer.monthly_consumptions.build(monthly_consumption_params)
 
     if @monthly_consumption.save
-      respond_to do |format|
-        format.html { redirect_to customer_monthly_consumptions_path(@customer), notice: 'Consumption added successfully.' }
-        format.json { render json: { message: 'Consumption added successfully!', data: @monthly_consumption }, status: :created }
-      end
+      render json: { message: 'Consumption added successfully!', data: @monthly_consumption }, status: :created
     else
-      respond_to do |format|
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: { errors: @monthly_consumption.errors.full_messages }, status: :unprocessable_entity }
-      end
+      render json: { errors: @monthly_consumption.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
-  # GET /monthly_consumptions/:id/edit
+  # GET /locations/:location_id/customers/:customer_id/monthly_consumptions/:id/edit
   def edit
   end
 
-  # PATCH/PUT /monthly_consumptions/:id
+  # PATCH/PUT /locations/:location_id/customers/:customer_id/monthly_consumptions/:id
   def update
     if @monthly_consumption.update(monthly_consumption_params)
-      respond_to do |format|
-        format.html { redirect_to customer_monthly_consumptions_path(@monthly_consumption.customer), notice: 'Consumption updated successfully.' }
-        format.json { render json: { message: 'Consumption updated successfully!', data: @monthly_consumption }, status: :ok }
-      end
+      render json: { message: 'Consumption updated successfully!', data: @monthly_consumption }, status: :ok
     else
-      respond_to do |format|
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: { errors: @monthly_consumption.errors.full_messages }, status: :unprocessable_entity }
-      end
+      render json: { errors: @monthly_consumption.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
-  # DELETE /monthly_consumptions/:id
+  # DELETE /locations/:location_id/customers/:customer_id/monthly_consumptions/:id
   def destroy
     @monthly_consumption.destroy
-    respond_to do |format|
-      format.html { redirect_to customer_monthly_consumptions_path(@monthly_consumption.customer), notice: 'Consumption deleted successfully.' }
-      format.json { render json: { message: 'Consumption deleted successfully.' }, status: :ok }
-    end
+    render json: { message: 'Consumption deleted successfully.' }, status: :ok
   end
 
   private
@@ -75,15 +60,20 @@ class MonthlyConsumptionsController < ApplicationController
   # Find the associated customer
   def set_customer
     @customer = Customer.find(params[:customer_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Customer not found' }, status: :not_found
   end
 
   # Find the specific monthly consumption record
   def set_monthly_consumption
     @monthly_consumption = MonthlyConsumption.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: 'Consumption record not found' }, status: :not_found
   end
 
   # Permit only safe parameters
   def monthly_consumption_params
-    params.require(:monthly_consumption).permit(:month, :year, :consumption)
+    params.require(:monthly_consumption).permit(:month, :year, :consumption, :balance, :overhead)
   end
 end
+
